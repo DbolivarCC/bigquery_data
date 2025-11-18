@@ -1,0 +1,77 @@
+/* Custom CSS for Looker Table */
+
+/* --- Targeting the Looker Table rows and cells --- */
+
+/* 1. Identify all rows within the table body */
+.looker-vis-table tbody tr {
+    display: flex; /* Use flexible layout for reordering */
+    flex-wrap: wrap; /* Allow content to wrap, though we're forcing it inline */
+    align-items: center;
+    width: 100%;
+    /* Ensure the row height is consistent for the main metric */
+    height: auto; 
+    min-height: 30px; /* Example height */
+}
+
+/* 2. Target the main metric row and subsequent variance rows */
+.looker-vis-table tbody tr {
+    /* Set a position context for absolute positioning if needed, 
+       but Flex/Grid is cleaner */
+}
+
+/* 3. Style the cells within the rows */
+.looker-vis-table tbody tr td {
+    /* Make cells flow inline */
+    display: block; 
+    /* Base width for the main metric cell */
+    width: 300px; 
+}
+
+/* 4. Target the variance rows specifically and adjust their layout */
+/* This is the tricky part, as there are no unique classes for these rows.
+   We must rely on the structure being exactly: Metric, Var #, Var % */
+
+/* --- Hacking the Variance Rows into the same line --- */
+
+/* Target the row *after* a row containing the main metric text.
+   This uses the "adjacent sibling" selector (+). */
+.looker-vis-table tbody tr:has(td:contains("Forecast")):not(.looker-row-group-header) + tr,
+.looker-vis-table tbody tr:has(td:contains("Revenue")):not(.looker-row-group-header) + tr {
+    /* This targets the Var # row */
+    position: relative; 
+    /* Visually push the whole row up to overlap the previous row */
+    margin-top: -30px; /* Adjust this value based on your row height (Body Size) */
+    
+    /* Make the first cell (which has the "Var #" label) invisible */
+    td:first-child {
+        display: none !important;
+    }
+    
+    /* Position the Var # value cell */
+    td:last-child {
+        width: 150px; /* Width for Var # */
+        position: absolute;
+        left: 310px; /* Position next to the main metric cell (300px width + 10px margin) */
+    }
+}
+
+/* Target the row 2 steps after the main metric row (the Var % row) */
+.looker-vis-table tbody tr:has(td:contains("Forecast")):not(.looker-row-group-header) + tr + tr,
+.looker-vis-table tbody tr:has(td:contains("Revenue")):not(.looker-row-group-header) + tr + tr {
+    /* This targets the Var % row */
+    position: relative;
+    /* Push the whole row up to overlap the first two rows */
+    margin-top: -60px; /* Adjust this value (2 * row height) */
+
+    /* Make the first cell (which has the "Var %" label) invisible */
+    td:first-child {
+        display: none !important;
+    }
+    
+    /* Position the Var % value cell */
+    td:last-child {
+        width: 100px; /* Width for Var % */
+        position: absolute;
+        left: 470px; /* Position next to the Var # cell (310 + 150 + 10 margin) */
+    }
+}
